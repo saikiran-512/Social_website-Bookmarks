@@ -1,4 +1,4 @@
-import redis
+import redis  # type: ignore[import-not-found]
 from django.conf import settings
 from django.contrib import messages
 from django.http import JsonResponse
