@@ -44,8 +44,8 @@
     {% block domready %}
         const url = '{% url "images:like" %}';
         var options = {
-            method: 'POST'
-            headers: {'X-CSREFToken': csrftoken},
+            method: 'POST',
+            headers: {'X-CSRFToken': csrftoken},
             mode: 'same-origin'
         }
         document.querySelector('a.like').addEventListener('click', function(e){

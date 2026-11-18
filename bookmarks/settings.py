@@ -160,8 +160,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Authentication Backend
 
-AUTHENTICATION_BACKEND = [
-    'django.contrib.backends.ModelBackend',
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
     'account.authentication.EmailAuthBackend',
     'social_core.backends.google.GoogleOAuth2',
 ]
