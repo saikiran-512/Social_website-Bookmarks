@@ -89,7 +89,7 @@ def edit(request):
             data=request.POST
         )
         profile_form =ProfileEditForm(
-            instance=request.user.profile,
+            instance=Profile.objects.get_or_create(user=request.user)[0],
             data=request.POST,
             files=request.FILES
         )
@@ -104,7 +104,9 @@ def edit(request):
             messages.error(request, 'Error updating your profile')
     else:
         user_form = UserEditForm(instance=request.user)
-        profile_form = ProfileEditForm(instance=request.user.profile)
+        profile_form = ProfileEditForm(
+            instance=Profile.objects.get_or_create(user=request.user)[0]
+        )
     return render(
         request,
         'account/edit.html',
@@ -142,6 +144,8 @@ def user_follow(request):
     if user_id and action:
         try:
             user = User.objects.get(id=user_id)
+            if user == request.user:
+                return JsonResponse({'status': 'error'})
             if action == 'follow':
                 Contact.objects.get_or_create(
                     user_from=request.user,

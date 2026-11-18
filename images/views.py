@@ -45,6 +45,7 @@ def image_create(request):
         {'section': 'images', 'form': form}
     )
 
+@login_required
 def image_detail(request, id, slug):
     image = get_object_or_404(Image, id=id, slug=slug)
     # increment total image views by 1
