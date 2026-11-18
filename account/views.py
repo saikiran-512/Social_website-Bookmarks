@@ -158,6 +158,6 @@ def user_follow(request):
                     user_to=user
                 ).delete()
             return JsonResponse({'status':'ok'})
-        except User.DoesNotExist:
+        except (User.DoesNotExist, ValueError):
             return JsonResponse({'status':'error'})
     return JsonResponse({'status': 'error'})

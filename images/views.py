@@ -1,4 +1,5 @@
 import redis  # type: ignore[import-not-found]
+import requests
 from django.conf import settings
 from django.contrib import messages
 from django.http import JsonResponse
@@ -27,15 +28,20 @@ def image_create(request):
         form = ImageCreateForm(data=request.POST)
         if form.is_valid():
             # form data is valid
-            cd = form.cleaned_data
-            new_image = form.save(commit=False)
-            # assign current user to the item
-            new_image.user = request.user
-            new_image.save()
-            create_action(request.user, 'bookmarked image', new_image)
-            messages.success(request, 'Image added successfully')
-            # redirect to new created item detail view
-            return redirect(new_image.get_absolute_url())
+            try:
+                new_image = form.save(commit=False)
+            except (requests.RequestException, ValueError):
+                form.add_error(
+                    'url', 'Could not download a valid image from that URL.'
+                )
+            else:
+                # assign current user to the item
+                new_image.user = request.user
+                new_image.save()
+                create_action(request.user, 'bookmarked image', new_image)
+                messages.success(request, 'Image added successfully')
+                # redirect to new created item detail view
+                return redirect(new_image.get_absolute_url())
     else:
         # build form with data provided by the bookmarklet via GET
         form = ImageCreateForm(data=request.GET)
@@ -76,7 +82,7 @@ def image_like(request):
             else:
                 image.users_like.remove(request.user)
             return JsonResponse({'status': 'ok'})
-        except Image.DoesNotExist:
+        except (Image.DoesNotExist, ValueError):
             pass
     return JsonResponse({'status': 'error'})
 
